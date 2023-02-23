@@ -1,4 +1,5 @@
-builds/*
+[Bb]uilds/*
+.sentry-native/*
 
 ###
 # OS generated
