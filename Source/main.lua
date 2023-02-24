@@ -1,28 +1,50 @@
-import "dvd" -- DEMO
-local dvd = dvd(1, -1) -- DEMO
+-- Imports
+import "WordScramble" -- Demo MiniGame
 
+-- Aliases for common playdate SDK features
+local pd <const> = playdate
 local gfx <const> = playdate.graphics
-local font = gfx.font.new('Fonts/Mini Sans 2X') -- DEMO
 
-local function loadGame()
-	playdate.display.setRefreshRate(50) -- Sets framerate to 50 fps
-	math.randomseed(playdate.getSecondsSinceEpoch()) -- seed for math.random
-	gfx.setFont(font) -- DEMO
+-- Resource loading; TODO: move this into loading coroutine to avoid performance hit on startup
+local font = gfx.font.new('Fonts/font-Cuberick-Bold-Halved')
+
+-- Main global variables
+local DRAW_DEBUG <const> = true -- Set to true to draw debug elements
+
+local wordScramble = WordScramble()
+
+--------------------------------------------------------------------------------
+
+-- Initializes game and sets some parameters
+local function LoadGame()
+	playdate.display.setRefreshRate(50) -- sets framerate to 50 fps
+	math.randomseed(pd.getSecondsSinceEpoch()) -- sets seed for math.random so that it's actually random
+	gfx.setFont(font) -- sets font to actually use
 end
 
-local function updateGame()
-	dvd:update() -- DEMO
+-- Handles game logic, called once per frame
+local function UpdateGame()
+	wordScramble:update() -- update state of demo minigame 
 end
 
-local function drawGame()
-	gfx.clear() -- Clears the screen
-	dvd:draw() -- DEMO
+-- Handles all drawing, called once per frame
+local function DrawGame()
+	gfx.clear() -- clears the screen
+	wordScramble:draw() -- draw demo minigame
 end
 
-loadGame()
+local function DrawDebug()
+	pd.drawFPS(0, 0)
+end
 
-function playdate.update()
-	updateGame()
-	drawGame()
-	playdate.drawFPS(0,0) -- FPS widget
+--------------------------------------------------------------------------------
+
+LoadGame()
+
+function pd.update()
+	UpdateGame()
+	DrawGame()
+	if (DRAW_DEBUG) then
+		DrawDebug()
+	end
 end
