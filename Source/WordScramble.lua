@@ -6,6 +6,9 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
 --------------------------------------------------------------------------------
+local clickSound = pd.sound.sampleplayer.new("Audio/SFX/rotaryClick.wav")
+local winSound = pd.sound.sampleplayer.new("Audio/SFX/electricGrowl.wav")
+local selectSound = pd.sound.sampleplayer.new("Audio/SFX/weeoh.wav")
 
 -- TODO: this should extend a more general MiniGame class
 class("WordScramble").extends()
@@ -41,8 +44,10 @@ function WordScramble:update()
     -- Left/Right changes which part of the string is selected
     if (self.leftSelected and pd.buttonJustPressed(pd.kButtonRight)) then
         self.leftSelected = false
+        selectSound:play()
     elseif (not self.leftSelected and pd.buttonJustPressed(pd.kButtonLeft)) then
         self.leftSelected = true
+        selectSound:play()
     end
 
     --1 full revolution of crank to cycle through all words
@@ -50,6 +55,7 @@ function WordScramble:update()
     local crankTicks = pd.getCrankTicks(#activeStringArray)
 
     if (crankTicks ~= 0) then
+        clickSound:play()
         -- Loop through strings, math is weird because it's 1-indexed
         if (self.leftSelected) then
             self.curLeftStringIndex = ((self.curLeftStringIndex + crankTicks - 1) % #self.leftStrings) + 1
