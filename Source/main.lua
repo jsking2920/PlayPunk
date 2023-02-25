@@ -6,7 +6,7 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
 -- Resource loading; TODO: move this into loading coroutine to avoid performance hit on startup
-local font = gfx.font.new('Fonts/font-Cuberick-Bold-Halved')
+local font = gfx.font.new('Fonts/Roobert-24-Medium-Halved')
 
 -- Main global variables
 local DRAW_DEBUG <const> = true -- Set to true to draw debug elements
