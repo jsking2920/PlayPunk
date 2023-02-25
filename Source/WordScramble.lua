@@ -38,7 +38,7 @@ function WordScramble:update()
     local activeStringArray = self.leftSelected and self.leftStrings or self.rightStrings --busted ternary op in lua
     local crankTicks = pd.getCrankTicks(#activeStringArray) 
 
-    if (crankTicks > 0) then
+    if (crankTicks ~= 0) then
         -- Loop through strings, math is weird because it's 1-indexed
         if (self.leftSelected) then
             self.curLeftStringIndex = ((self.curLeftStringIndex + crankTicks - 1) % #self.leftStrings) + 1
