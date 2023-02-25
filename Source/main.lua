@@ -1,4 +1,6 @@
 -- Imports
+import "CoreLibs/ui"
+import "CoreLibs/timer"
 import "WordScramble" -- Demo MiniGame
 
 -- Aliases for common playdate SDK features
@@ -8,9 +10,10 @@ local gfx <const> = playdate.graphics
 -- Resource loading; TODO: move this into loading coroutine to avoid performance hit on startup
 local font = gfx.font.new('Fonts/Roobert-24-Medium-Halved')
 
--- Main global variables
-local DRAW_DEBUG <const> = true -- Set to true to draw debug elements
-
+-- Globals (and globals-to-this-file)
+DRAW_DEBUG = true -- Set to true to draw debug elements
+shouldShowCrankIndicator = false -- update this in other scripts to show indicator
+local showingCrankIndicator = false
 local wordScramble = WordScramble()
 
 --------------------------------------------------------------------------------
@@ -24,7 +27,7 @@ end
 
 -- Handles game logic, called once per frame
 local function UpdateGame()
-	wordScramble:update() -- update state of demo minigame 
+	wordScramble:update() -- update state of demo minigame
 end
 
 -- Handles all drawing, called once per frame
@@ -42,9 +45,23 @@ end
 LoadGame()
 
 function pd.update()
+	pd.timer.updateTimers()
+	
 	UpdateGame()
 	DrawGame()
 	if (DRAW_DEBUG) then
 		DrawDebug()
+	end
+
+	-- Crank indicator calls have to be done here, not in other classes; see: https://devforum.play.date/t/can-crankindicator-update-be-called-in-a-class/6301/8
+	if (shouldShowCrankIndicator) then
+		if (showingCrankIndicator) then
+			pd.ui.crankIndicator:update()
+		else
+			pd.ui.crankIndicator:start()
+			showingCrankIndicator = true
+		end
+	else
+		showingCrankIndicator = false
 	end
 end

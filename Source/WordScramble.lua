@@ -24,19 +24,30 @@ function WordScramble:init()
 
     -- TODO: generalize this for three/four section words
     self.leftSelected = false
+
+    self.crankPromptActive = false
 end
 
 function WordScramble:update()
+    -- Crank Required Alert
+    if (pd.isCrankDocked() and not self.crankPromptActive) then
+        shouldShowCrankIndicator = true
+        self.crankPromptActive = true
+    elseif (not pd.isCrankDocked() and self.crankPromptActive) then
+        shouldShowCrankIndicator = false
+        self.crankPromptActive = false
+    end
+
     -- Left/Right changes which part of the string is selected
     if (self.leftSelected and pd.buttonJustPressed(pd.kButtonRight)) then
         self.leftSelected = false
     elseif (not self.leftSelected and pd.buttonJustPressed(pd.kButtonLeft)) then
         self.leftSelected = true
     end
-    
+
     --1 full revolution of crank to cycle through all words
     local activeStringArray = self.leftSelected and self.leftStrings or self.rightStrings --busted ternary op in lua
-    local crankTicks = pd.getCrankTicks(#activeStringArray) 
+    local crankTicks = pd.getCrankTicks(#activeStringArray)
 
     if (crankTicks ~= 0) then
         -- Loop through strings, math is weird because it's 1-indexed
