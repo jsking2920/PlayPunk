@@ -45,9 +45,11 @@ function WordScramble:update()
     if (self.leftSelected and pd.buttonJustPressed(pd.kButtonRight)) then
         self.leftSelected = false
         selectSound:play()
+        cameraShake:addTrauma(1.0)
     elseif (not self.leftSelected and pd.buttonJustPressed(pd.kButtonLeft)) then
         self.leftSelected = true
         selectSound:play()
+        cameraShake:addTrauma(1.0)
     end
 
     --1 full revolution of crank to cycle through all words
@@ -66,6 +68,11 @@ function WordScramble:update()
 end
 
 function WordScramble:draw()
+    -- Background color is set to black to make camera shake look good, so draw a big white rect for the border
+    gfx.setColor(gfx.kColorWhite)
+    gfx.fillRect(0, 0, 400, 240)
+    
+    gfx.setColor(gfx.kColorBlack)
     -- Selected half is drawn with negative text on a filled rect
     if (self.leftSelected) then
         -- (topLeftCornerX, topLeftCornerY, width, height)
