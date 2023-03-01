@@ -9,7 +9,8 @@ local font = gfx.font.new("Fonts/Roobert-24-Medium-Halved")
 
 --------------------------------------------------------------------------------
 local clickSound = pd.sound.sampleplayer.new("Audio/SFX/rotaryClick.wav")
-local winSound = pd.sound.sampleplayer.new("Audio/SFX/electricGrowl.wav")
+local loseSound = pd.sound.sampleplayer.new("Audio/SFX/electricGrowl.wav")
+local winSound = pd.sound.sampleplayer.new("Audio/SFX/positiveBeep.wav")
 local selectSound = pd.sound.sampleplayer.new("Audio/SFX/weeoh.wav")
 
 -- TODO: this should extend a more general MiniGame class
@@ -17,13 +18,16 @@ class("WordScramble").extends()
 
 function WordScramble:init()
     --TODO: expand on these; make sure theres no possible combinations with "nonsense" string
-    local possibleTargetStrings = {"concrete", "designer"}
+    local possibleTargetStrings = {"concrete", "designer", "believer", "licenses", "nonsense", "follower", "dominion"}
     
     -- TODO: randomize these
     self.leftStrings = {"skjs", "beli", "qpcj", "port", "crea"}
     self.rightStrings = {"lots", "pors", "ooop", "ners", "eyzs"}
     
     self.targetWord = possibleTargetStrings[math.random(#possibleTargetStrings)] -- tables are 1 indexed, random is min and max inclusive, # is length operator
+    table.insert(self.leftStrings, math.random(#self.leftStrings), string.sub(self.targetWord, 1, 4))
+    table.insert(self.rightStrings, math.random(#self.rightStrings), string.sub(self.targetWord, 5, 8))
+
     self.curLeftStringIndex = math.random(#self.leftStrings)
     self.curRightStringIndex = math.random(#self.rightStrings)
 
@@ -47,11 +51,9 @@ function WordScramble:update()
     if (self.leftSelected and pd.buttonJustPressed(pd.kButtonRight)) then
         self.leftSelected = false
         selectSound:play()
-        cameraShake:addTrauma(1.0)
     elseif (not self.leftSelected and pd.buttonJustPressed(pd.kButtonLeft)) then
         self.leftSelected = true
         selectSound:play()
-        cameraShake:addTrauma(1.0)
     end
 
     --1 full revolution of crank to cycle through all words
@@ -65,6 +67,17 @@ function WordScramble:update()
             self.curLeftStringIndex = ((self.curLeftStringIndex + crankTicks - 1) % #self.leftStrings) + 1
         else
             self.curRightStringIndex = ((self.curRightStringIndex + crankTicks - 1) % #self.rightStrings) + 1
+        end
+    end
+
+    -- Press A to lock in a word
+    if (pd.buttonJustPressed(pd.kButtonA)) then
+        if (self.leftStrings[self.curLeftStringIndex] .. self.rightStrings[self.curRightStringIndex] == self.targetWord) then
+            winSound:play()
+            self:init()
+        else
+            loseSound:play()
+            cameraShake:addTrauma(1.0)
         end
     end
 end
