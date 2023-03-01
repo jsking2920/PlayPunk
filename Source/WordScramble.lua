@@ -5,6 +5,8 @@ import "CoreLibs/crank"
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
+local font = gfx.font.new("Fonts/Roobert-24-Medium-Halved")
+
 --------------------------------------------------------------------------------
 local clickSound = pd.sound.sampleplayer.new("Audio/SFX/rotaryClick.wav")
 local winSound = pd.sound.sampleplayer.new("Audio/SFX/electricGrowl.wav")
@@ -68,6 +70,9 @@ function WordScramble:update()
 end
 
 function WordScramble:draw()
+    -- set font to use for this text
+    gfx.setFont(font)
+
     -- Background color is set to black to make camera shake look good, so draw a big white rect for the border
     gfx.setColor(gfx.kColorWhite)
     gfx.fillRect(0, 0, 400, 240)

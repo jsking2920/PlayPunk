@@ -3,13 +3,11 @@ import "CoreLibs/ui"
 import "CoreLibs/timer"
 import "WordScramble" -- Demo MiniGame
 import "CameraShake"
+import "StatsReadout"
 
 -- Aliases for common playdate SDK features
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
-
--- Resource loading; TODO: move this into loading coroutine to avoid performance hit on startup
-local font = gfx.font.new("Fonts/Roobert-24-Medium-Halved")
 
 -- Globals (and globals-to-this-file)
 DRAW_DEBUG = true -- Set to true to draw debug elements
@@ -19,7 +17,8 @@ deltaTime = 0.0 -- Time since last frame; see here for why this is neccesary: ht
 shouldShowCrankIndicator = false -- update this in other scripts to show indicator
 local showingCrankIndicator = false
 
-cameraShake = CameraShake()
+cameraShake = CameraShake() -- for camera shake fx
+statsReadout = StatsReadout() -- for fancy little fake OS-like diagnostic stats 
 
 local wordScramble = WordScramble()
 
@@ -29,25 +28,30 @@ local wordScramble = WordScramble()
 local function LoadGame()
 	playdate.display.setRefreshRate(50) -- sets framerate to 50 fps
 	math.randomseed(pd.getSecondsSinceEpoch()) -- sets seed for math.random so that it's actually random
-	gfx.setFont(font) -- sets font to actually use
+	defaultFont = gfx.font.new("Fonts/Roobert-24-Medium-Halved")
+	gfx.setFont(defaultFont) -- sets defualt font to use if one isn't specified later
 	gfx.setBackgroundColor(gfx.kColorBlack) -- default "clear flag" color
 	cameraShake:init()
+	statsReadout:init()
 end
 
 -- Handles game logic, called once per frame
 local function UpdateGame()
 	wordScramble:update() -- update state of demo minigame
-	cameraShake:update()
+	cameraShake:update() -- sets display offset to create shake effect
+	statsReadout:update()
 end
 
 -- Handles all drawing, called once per frame
 local function DrawGame()
 	gfx.clear() -- clears the screen
 	wordScramble:draw() -- draw demo minigame
+	statsReadout:draw()
 end
 
 local function DrawDebug()
-	pd.drawFPS(0, 0)
+	-- FPS included in stats readout
+	--pd.drawFPS(0, 0)
 end
 
 --------------------------------------------------------------------------------
